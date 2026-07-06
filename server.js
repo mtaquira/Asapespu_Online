@@ -119,15 +119,3 @@ app.listen(port, () => {
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`Database: ${process.env.DB_HOST || 'not configured'}`);
 });
-
-app.get('/api/debug', async (req, res) => {
-  try {
-    const [rows] = await pool.query('SELECT * FROM ec_asociado LIMIT 1');
-    res.json(rows[0] || {});
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log('API listening on', port));
