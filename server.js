@@ -5,7 +5,7 @@ const mysql = require('mysql2/promise');
 
 const app = express();
 
-// Middleware para CORS manual (más confiable)
+// Middleware para CORS manual
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -29,11 +29,7 @@ app.use(cors({
 
 app.use(express.json());
 
-// Health check endpoint (no DB access)
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
-
+// DB Connection Pool
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -41,6 +37,13 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
+});
+
+// ============ ROUTES ============
+
+// Health check endpoint (no DB access)
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
 });
 
 app.get('/health', (req, res) => {
@@ -51,6 +54,7 @@ app.get('/', (req, res) => {
   res.send('API running');
 });
 
+// Get items by asociado
 app.get('/api/items', async (req, res) => {
   const asociado = req.query.asociado;
   try {
@@ -63,11 +67,12 @@ app.get('/api/items', async (req, res) => {
     const [asociadoRows] = await pool.query('SELECT * FROM ec_asociado LIMIT 10');
     res.json({ asociado: asociadoRows, cuotas: [] });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'DB error' });
+    console.error('Error in /api/items:', err);
+    res.status(500).json({ error: 'DB error', message: err.message });
   }
 });
 
+// Search asociados by name
 app.get('/api/asociados', async (req, res) => {
   const query = (req.query.q || '').toString().trim();
   console.log('GET /api/asociados q=', query);
@@ -91,49 +96,28 @@ app.get('/api/asociados', async (req, res) => {
 
     res.json(rows);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'DB error' });
+    console.error('Error in /api/asociados:', err);
+    res.status(500).json({ error: 'DB error', message: err.message });
   }
 });
 
+// Debug endpoint
 app.get('/api/debug', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM ec_asociado LIMIT 1');
-    res.json(rows[0] || {});
+    res.json({ success: true, data: rows[0] || {} });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error in /api/debug:', err);
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
+// ============ START SERVER ============
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log('API listening on', port));
-
-app.get('/api/asociados', async (req, res) => {
-  const query = (req.query.q || '').toString().trim();
-  console.log('GET /api/asociados q=', query);
-  try {
-    if (!query) {
-      return res.json([]);
-    }
-
-    const terms = query.split(/\s+/).filter(Boolean);
-    const params = [query];
-    let sql = 'SELECT * FROM ec_asociado WHERE asociado = ?';
-
-    if (terms.length) {
-      const termConditions = terms.map(() => 'LOWER(nombre_fin) LIKE LOWER(?)').join(' AND ');
-      sql += ` OR (${termConditions})`;
-      params.push(...terms.map((term) => `%${term}%`));
-    }
-
-    sql += ' LIMIT 50';
-    const [rows] = await pool.query(sql, params);
-
-    res.json(rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'DB error' });
-  }
+app.listen(port, () => {
+  console.log(`API listening on port ${port}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Database: ${process.env.DB_HOST || 'not configured'}`);
 });
 
 app.get('/api/debug', async (req, res) => {
