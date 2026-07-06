@@ -29,6 +29,11 @@ app.use(cors({
 
 app.use(express.json());
 
+// Health check endpoint (no DB access)
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,

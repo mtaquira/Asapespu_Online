@@ -40,7 +40,7 @@ export class ApiService {
       }
 
       try {
-        await lastValueFrom(this.http.get(`${url}/debug`));
+        await lastValueFrom(this.http.get(`${url}/health`));
         this.resolvedBaseUrl = url;
         return url;
       } catch {
