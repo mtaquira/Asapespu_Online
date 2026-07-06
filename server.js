@@ -5,7 +5,21 @@ const mysql = require('mysql2/promise');
 
 const app = express();
 
-// CORS configuration
+// Middleware para CORS manual (más confiable)
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Max-Age', '3600');
+  
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  
+  next();
+});
+
+// CORS con cors package
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -23,8 +37,6 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
 });
-
-app.options('*', cors());
 
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' });
@@ -50,6 +62,46 @@ app.get('/api/items', async (req, res) => {
     res.status(500).json({ error: 'DB error' });
   }
 });
+
+app.get('/api/asociados', async (req, res) => {
+  const query = (req.query.q || '').toString().trim();
+  console.log('GET /api/asociados q=', query);
+  try {
+    if (!query) {
+      return res.json([]);
+    }
+
+    const terms = query.split(/\s+/).filter(Boolean);
+    const params = [query];
+    let sql = 'SELECT * FROM ec_asociado WHERE asociado = ?';
+
+    if (terms.length) {
+      const termConditions = terms.map(() => 'LOWER(nombre_fin) LIKE LOWER(?)').join(' AND ');
+      sql += ` OR (${termConditions})`;
+      params.push(...terms.map((term) => `%${term}%`));
+    }
+
+    sql += ' LIMIT 50';
+    const [rows] = await pool.query(sql, params);
+
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'DB error' });
+  }
+});
+
+app.get('/api/debug', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM ec_asociado LIMIT 1');
+    res.json(rows[0] || {});
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log('API listening on', port));
 
 app.get('/api/asociados', async (req, res) => {
   const query = (req.query.q || '').toString().trim();
