@@ -8,10 +8,10 @@ app.use(cors());
 app.use(express.json());
 
 const pool = mysql.createPool({
-  host: process.env.DB_HOST || '91.238.160.176',
-  user: process.env.DB_USER || 'asapespu_admintk',
-  password: process.env.DB_PASS || 'Asapespu*+2024',
-  database: process.env.DB_NAME || 'asapespu_db_sisasa',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
 });
