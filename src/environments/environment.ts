@@ -4,9 +4,9 @@
 
 export const environment = {
   production: false,
-  apiBaseUrlWeb: 'http://localhost:3000/api',
-  apiBaseUrlAndroidEmulator: 'http://10.0.2.2:3000/api',
-  apiBaseUrlAndroidDevice: 'http://192.168.1.50:3000/api',
+  apiBaseUrlWeb: 'https://asapespuonline-production.up.railway.app/api',
+  apiBaseUrlAndroidEmulator: 'https://asapespuonline-production.up.railway.app/api',
+  apiBaseUrlAndroidDevice: 'https://asapespuonline-production.up.railway.app/api',
 };
 
 /*
