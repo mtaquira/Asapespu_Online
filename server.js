@@ -33,6 +33,8 @@ app.get('/health', (req, res) => {
 app.get('/', (req, res) => {
   res.send('API running');
 });
+
+app.get('/api/items', async (req, res) => {
   const asociado = req.query.asociado;
   try {
     if (asociado) {
