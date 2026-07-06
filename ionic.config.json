@@ -1,0 +1,7 @@
+{
+  "name": "Asapespu_Online",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

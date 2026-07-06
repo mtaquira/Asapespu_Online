@@ -1,0 +1,77 @@
+ion-content {
+  --background: #f8f9fa;
+}
+
+ion-card {
+  margin: 6px 6px 10px;
+  border-radius: 8px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+}
+
+ion-card-header {
+  padding-bottom: 4px;
+}
+
+ion-card-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+ion-item {
+  --padding-start: 6px;
+  --inner-padding-end: 6px;
+}
+
+.table-responsive {
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  table-layout: auto;
+}
+
+table thead {
+  background-color: #f3f5f7;
+}
+
+table th, table td {
+  padding: 6px 8px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+table th {
+  font-weight: 600;
+  color: #374151;
+}
+
+table td {
+  color: #4b5563;
+}
+
+.clickable-row {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.clickable-row:hover {
+  background-color: #eef6fb;
+}
+
+.detail-row {
+  padding: 6px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.9rem;
+}
+
+.detail-row strong {
+  display: inline-block;
+  min-width: 140px;
+  color: #374151;
+}
+
