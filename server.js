@@ -4,7 +4,15 @@ const cors = require('cors');
 const mysql = require('mysql2/promise');
 
 const app = express();
-app.use(cors());
+
+// CORS configuration
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: false,
+}));
+
 app.use(express.json());
 
 const pool = mysql.createPool({
@@ -16,7 +24,15 @@ const pool = mysql.createPool({
   connectionLimit: 10,
 });
 
-app.get('/api/items', async (req, res) => {
+app.options('*', cors());
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', message: 'Server is running' });
+});
+
+app.get('/', (req, res) => {
+  res.send('API running');
+});
   const asociado = req.query.asociado;
   try {
     if (asociado) {
@@ -59,10 +75,6 @@ app.get('/api/asociados', async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'DB error' });
   }
-});
-
-app.get('/', (req, res) => {
-  res.send('API running');
 });
 
 app.get('/api/debug', async (req, res) => {
