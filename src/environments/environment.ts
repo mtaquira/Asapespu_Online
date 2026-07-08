@@ -4,9 +4,7 @@
 
 export const environment = {
   production: false,
-  apiBaseUrlWeb: 'https://asapespuonline-production.up.railway.app/api',
-  apiBaseUrlAndroidEmulator: 'https://asapespuonline-production.up.railway.app/api',
-  apiBaseUrlAndroidDevice: 'https://asapespuonline-production.up.railway.app/api',
+  apiBaseUrl: 'https://asapespu.com/api_1',
 };
 
 /*
